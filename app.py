@@ -1,9 +1,12 @@
 import random
 import io
 
-from flask import Flask, make_response
+from flask import Flask, make_response, request
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+
+from textblob import TextBlob
+import json
 
 app = Flask(__name__)
 
@@ -16,15 +19,7 @@ bigquery_client = bigquery.Client()
 # The name for the new dataset
 dataset_id = 'tweetify'
 
-# Prepares a reference to the new dataset
-dataset_ref = bigquery_client.dataset(dataset_id)
-dataset = bigquery.Dataset(dataset_ref)
-
-print('Dataset {} created.'.format(dataset.dataset_id))
-
-@app.route('/')
-def hello_world():
-	    return 'Hello, World!'
+# print('Dataset {} created.'.format(dataset.dataset_id))
 
 @app.route('/gcp/<username>')
 def get_bq(username):
@@ -54,3 +49,13 @@ def plot():
 	response.mimetype = 'image/png'
 	
 	return response
+
+@app.route('/get_sent', methods=['POST'])
+def get_sent():
+	print(request)
+
+	tb = TextBlob(request.form['text'])
+	res = {'polarity': tb.sentiment.polarity, 'subjectivity': tb.sentiment.subjectivity}
+	json_res = json.dumps(res)
+	
+	return json_res
