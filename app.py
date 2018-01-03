@@ -19,8 +19,6 @@ bigquery_client = bigquery.Client()
 # The name for the new dataset
 dataset_id = 'tweetify'
 
-# print('Dataset {} created.'.format(dataset.dataset_id))
-
 @app.route('/gcp/<username>')
 def get_bq(username):
 
@@ -50,9 +48,8 @@ def plot():
 	
 	return response
 
-@app.route('/get_sent', methods=['POST'])
+@app.route('/get_sent/', methods=['POST'])
 def get_sent():
-	print(request)
 
 	tb = TextBlob(request.form['text'])
 	res = {'polarity': tb.sentiment.polarity, 'subjectivity': tb.sentiment.subjectivity}
